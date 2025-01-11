@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recuperar Senha - Controle de Estoque</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Materialize CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <!-- Dexie.js (IndexedDB Wrapper) -->
+  <script src="https://cdn.jsdelivr.net/npm/dexie/dist/dexie.min.js"></script>
+
+  <!-- Custom CSS -->
+  <style>
+    body {
+      background: linear-gradient(to bottom, #1a73e8, #4caf50);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .recovery-card {
+      background-color: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      padding: 2rem;
+      max-width: 400px;
+      margin: auto;
+    }
+    .recovery-header {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #1a73e8;
+      margin-bottom: 1.5rem;
+    }
+    .btn-recovery {
+      background-color: #4caf50;
+      color: white;
+    }
+    .btn-recovery:hover {
+      background-color: #388e3c;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen">
+
+  <!-- Recuperar Senha Card -->
+  <div class="recovery-card">
+    <div class="recovery-header">Recuperar Senha</div>
+    <form id="recoveryForm">
+      <div class="input-field">
+        <label for="email">Email</label>
+        <input type="email" id="email" class="form-control" placeholder="Digite seu email" required>
+      </div>
+      <button type="submit" class="btn btn-recovery w-100 mt-4">Recuperar Senha</button>
+    </form>
+    <div class="text-center mt-3">
+      <a href="index.html" class="text-decoration-none">Voltar ao Login</a>
+    </div>
+  </div>
+
+  <!-- Script para Recuperar Senha -->
+  <script>
+    // Configuração do IndexedDB com Dexie.js
+    const db = new Dexie("estoqueDB");
+    db.version(1).stores({
+      usuarios: "++id,email,password"
+    });
+
+    // Recuperar Senha
+    document.getElementById("recoveryForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+
+      db.usuarios
+        .where({ email })
+        .first()
+        .then(user => {
+          if (user) {
+            Swal.fire({
+              icon: "success",
+              title: "Senha Recuperada!",
+              text: `Sua senha é: ${user.password}`,
+              confirmButtonText: "OK"
+            });
+          } else {
+            Swal.fire({
+              icon: "error",
+              title: "Erro",
+              text: "Email não encontrado no sistema."
+            });
+          }
+        });
+    });
+  </script>
+
+  <!-- Materialize JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
